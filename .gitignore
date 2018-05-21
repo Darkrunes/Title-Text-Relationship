@@ -107,3 +107,4 @@ glove.840B.300d.txt
 final_scoring_data/
 test_data/
 training_data/
+glove.6B.*
