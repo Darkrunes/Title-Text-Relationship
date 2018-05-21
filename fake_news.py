@@ -6,6 +6,9 @@ import tensorboard
 import pandas as pd
 import numpy as np
 import os
+import re
+
+from file_discussion_types import Stances
 import rnn_model
 
 MAX_SEQ_LEN = 250
@@ -14,6 +17,7 @@ VALIDATION_SPLIT = 0.2
 
 TRAINING_DIR = "training_data/"
 EMBEDDING_NAME = "glove.6B.200d.txt"
+
 
 
 def read_embeddings():
@@ -41,15 +45,31 @@ def read_input_files():
         next(file)                          # First line has header info
         for line in file:
             values = line.rsplit(",", 2)
-            labels.append(values[2])
-            text.append(values[0] + " " + train_bodies.at[int(values[1]), "articleBody"])
+            values[2] = values[2].strip()
+            if values[2] == "agree":
+                labels.append(0)
+            elif values[2] == "disagree":
+                labels.append(1)
+            elif values[2] == "discuss":
+                labels.append(2)
+            elif values[2] == "unrelated":
+                labels.append(3)
 
-    return text, labels
+            text.append(values[0].strip() + " " + (train_bodies.at[int(values[1]), "articleBody"]).strip())
+
+    return preprocess_text(text), labels
+
+
+def preprocess_text(text_arr):
+    for i in range(len(text_arr)):
+        text_arr[i] = re.sub(r'[^\w ]', '', text_arr[i])
+
+    return text_arr
 
 
 def main():
     print("Reading in embeddings")
-    embeddings_index = read_embeddings()
+    #embeddings_index = read_embeddings()
     print("Reading in input files now")
     train_text, train_labels = read_input_files()
 
