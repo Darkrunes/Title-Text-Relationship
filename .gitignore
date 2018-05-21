@@ -103,3 +103,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 .idea/
+glove.840B.300d.txt
+final_scoring_data/
+test_data/
+training_data/

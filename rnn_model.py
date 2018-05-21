@@ -1,7 +1,7 @@
 # Fake News Challenge Attempt using RNN
 # Saffat Shams Akanda, z5061498 @ UNSW
 
-import tensorflow
+import keras
 import tensorboard
 import numpy
 import os

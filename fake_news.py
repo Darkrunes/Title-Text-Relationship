@@ -1,7 +1,7 @@
 # Fake News Challenge Attempt using RNN
 # Saffat Shams Akanda, z5061498 @ UNSW
 
-import tensorflow
+import keras
 import tensorboard
 import numpy as np
 import os
@@ -29,7 +29,7 @@ def read_embeddings():
     return embeddings_index
 
 
-def read_input_file():
+def read_input_files():
     pass
 
 
