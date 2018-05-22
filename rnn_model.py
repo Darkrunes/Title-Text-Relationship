@@ -2,9 +2,13 @@
 # Saffat Shams Akanda, z5061498 @ UNSW
 
 import keras
-import tensorboard
+from keras.layers import Dense, Input, Conv1D, MaxPooling1D, LSTM
 import numpy
 import os
+
+RECURRENT_UNITS = 30
+DROPOUT_RATE = 0.2
+EPOCHS = 50
 
 
 class recurrentModel():
@@ -12,8 +16,81 @@ class recurrentModel():
     def __init__(self):
         pass
 
-    def build_model(self):
-        pass
+    def build_model_basic_RNN(self, num_words, embedding_matrix, max_seq_len, embedding_dimensions):
+        self.modelInput = Input(shape=(max_seq_len, ), dtype="int32")
+        embedding_layer = keras.layers.Embedding(num_words, embedding_dimensions,
+                                                 weights=[embedding_matrix],
+                                                 input_length=max_seq_len,
+                                                 trainable=False)(self.modelInput)
+        """
+        x = Dense(512, activation="relu")(embedding_layer)
+
+        x = LSTM(256, return_sequences=True)(x)
+        x = LSTM(256, return_sequences=True)(x)
+        x = LSTM(256)(x)
+
+        x = Dense(512, activation="relu")(x)
+        x = Dense(512, activation="relu")(x)
+        x = Dense(64, activation="relu")(x)
+
+        self.preds = Dense(64, activation="softmax")(x)
+        self.model = keras.Model(self.modelInput, self.preds)
+
+        """
+        x = Conv1D(128, 5, activation='relu')(embedding_layer)
+        x = MaxPooling1D(5)(x)
+        x = Conv1D(128, 5, activation='relu')(x)
+        x = MaxPooling1D(5)(x)
+        x = Conv1D(128, 5, activation='relu')(x)
+        x = keras.layers.GlobalMaxPooling1D()(x)
+        x = Dense(128, activation='relu')(x)
+        self.preds = Dense(4, activation='softmax')(x)
+
+        self.model = keras.Model(self.modelInput, self.preds)
+        self.model.compile(optimizer="rmsprop", loss="categorical_crossentropy",
+                           metrics=["accuracy"])
 
     def predict(self):
         pass
+
+    def train(self, x_train, y_train, x_val, y_val):
+        tbCallBack = keras.callbacks.TensorBoard(log_dir="./logs", write_graph=True, write_images=True)
+        checkpointCallBack = keras.callbacks.ModelCheckpoint("Checkpoints/weights.{epoch:02d}.hdf5", period=5)
+
+        self.model.fit(x_train, y_train, batch_size=50, epochs=EPOCHS, validation_data=(x_val, y_val),
+                       callbacks=[tbCallBack, checkpointCallBack])
+
+    def build_model_basic_RNN2(self, num_words, embedding_matrix, max_seq_len, embedding_dimensions, x_train):
+
+        self.modelInput = Input(shape=(max_seq_len, ), dtype="int32")
+        embedding_layer = (keras.layers.Embedding(num_words, embedding_dimensions,
+                                                  weights=[embedding_matrix],
+                                                  input_length=max_seq_len,
+                                                  trainable=False,
+                                                  ))(self.modelInput)
+
+        """
+        self.model.add(Conv1D(64, 5, activation='relu'))
+        self.model.add(MaxPooling1D(pool_size=4))
+        #self.model.add(LSTM(100))
+        self.model.add(Dense(61, activation='sigmoid'))
+        """
+
+        #x = Dense(512, activation="relu")(embedding_layer)
+
+        x = LSTM(256, return_sequences=True)(embedding_layer)
+        x = LSTM(256, return_sequences=True)(x)
+        x = LSTM(256)(x)
+
+        x = Dense(512, activation="relu")(x)
+        x = Dense(512, activation="relu")(x)
+        x = Dense(64, activation="relu")(x)
+
+        self.preds = Dense(64, activation="softmax")(x)
+        self.model = keras.Model(self.modelInput, self.preds)
+
+
+        self.model.compile(optimizer="rmsprop", loss="categorical_crossentropy",
+                           metrics=["accuracy"])
+
+
