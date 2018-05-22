@@ -69,28 +69,36 @@ class recurrentModel():
                                                   trainable=False,
                                                   ))(self.modelInput)
 
-        """
-        self.model.add(Conv1D(64, 5, activation='relu'))
-        self.model.add(MaxPooling1D(pool_size=4))
-        #self.model.add(LSTM(100))
-        self.model.add(Dense(61, activation='sigmoid'))
-        """
-
-        #x = Dense(512, activation="relu")(embedding_layer)
-
         x = LSTM(256, return_sequences=True)(embedding_layer)
-        x = LSTM(256, return_sequences=True)(x)
-        x = LSTM(256)(x)
+        x = LSTM(256, return_sequences=True, dropout=DROPOUT_RATE)(x)
+        x = LSTM(256, dropout=DROPOUT_RATE)(x)
 
         x = Dense(512, activation="relu")(x)
-        x = Dense(512, activation="relu")(x)
-        x = Dense(64, activation="relu")(x)
+        x = keras.layers.Dropout(DROPOUT_RATE)(x)
+        x = Dense(256, activation="relu")(x)
+        x = keras.layers.Dropout(DROPOUT_RATE)(x)
+        x = Dense(128, activation="relu")(x)
 
-        self.preds = Dense(64, activation="softmax")(x)
+        self.preds = Dense(5, activation="softmax")(x)
         self.model = keras.Model(self.modelInput, self.preds)
 
 
         self.model.compile(optimizer="rmsprop", loss="categorical_crossentropy",
                            metrics=["accuracy"])
 
+    def build_model_basic_RNN3(self, num_words, embedding_matrix, max_seq_len, embedding_dimensions, x_train):
 
+
+        self.model = keras.Sequential()
+        self.model.add(keras.layers.Embedding(num_words, embedding_dimensions,
+                                              weights=[embedding_matrix],
+                                              input_length=max_seq_len,
+                                              trainable=False,
+                                              ))
+
+        self.model.add(LSTM(256))
+        self.model.add(Dense(128, activation="relu"))
+        self.model.add(Dense(5, activation="softmax"))
+
+        self.model.compile(optimizer="rmsprop", loss="categorical_crossentropy",
+                           metrics=["accuracy"])

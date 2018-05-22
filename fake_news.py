@@ -48,13 +48,13 @@ def read_input_files():
             values = line.rsplit(",", 2)
             values[2] = values[2].strip()
             if values[2] == "agree":
-                labels.append(np.asarray([1, 0, 0, 0]))
+                labels.append(1)
             elif values[2] == "disagree":
-                labels.append(np.asarray([0, 1, 0, 0]))
+                labels.append(2)
             elif values[2] == "discuss":
-                labels.append(np.asarray([0, 0, 1, 0]))
+                labels.append(3)
             elif values[2] == "unrelated":
-                labels.append(np.asarray([0, 0, 0, 1]))
+                labels.append(4)
 
             text.append(values[0].strip() + " " + (train_bodies.at[int(values[1]), "articleBody"]).strip())
 
@@ -121,21 +121,21 @@ def main():
     word_index = tokenizer.word_index
 
     padded_seq = keras.preprocessing.sequence.pad_sequences(seqs, MAX_SEQ_LEN)
-    #train_labels = keras.utils.to_categorical(np.asarray((train_labels)))
+    train_labels = keras.utils.to_categorical(np.asarray((train_labels)))
     print("Data tensor: ", padded_seq.shape)
-    print("Label Tensor: ", (train_labels[4]).shape)
+    print("Label Tensor: ", train_labels.shape)
 
     # Split into test and validation sets
     print("Creating Sets")
-    #indicies = np.arange(padded_seq.shape[0])
-    #np.random.shuffle(indicies)
-    #data = padded_seq[indicies]
-    #labels = train_labels[indicies]
-    validation_set_size = int(VALIDATION_SPLIT * padded_seq.shape[0])
+    indicies = np.arange(padded_seq.shape[0])
+    np.random.shuffle(indicies)
+    data = padded_seq[indicies]
+    train_labels = train_labels[indicies]
+    validation_set_size = int(VALIDATION_SPLIT * data.shape[0])
 
-    x_train = padded_seq[:-validation_set_size]
+    x_train = data[:-validation_set_size]
     y_train = train_labels[:-validation_set_size]
-    x_val = padded_seq[-validation_set_size:]
+    x_val = data[-validation_set_size:]
     y_val = train_labels[-validation_set_size:]
 
     # Create embeddings matrix to use as input
