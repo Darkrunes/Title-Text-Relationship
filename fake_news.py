@@ -8,13 +8,12 @@ import os
 import re
 import rnn_model
 
-MAX_SEQ_LEN = 250
+MAX_SEQ_LEN = 200
 EMBEDDING_DIMENSIONS = 50
 VALIDATION_SPLIT = 0.2
 
 TRAINING_DIR = "training_data/"
 EMBEDDING_NAME = "glove.6B.50d.txt"
-
 
 
 def read_embeddings():
@@ -73,40 +72,6 @@ def preprocess_text(text_arr):
     return text_arr
 
 
-def main2():
-    # Read in Embeddings
-    embeddings_index, word_index_dict = read_embeddings()
-    # Read in input files
-    train_text, train_labels = read_input_files()
-
-    data = np.full((len(train_text), MAX_SEQ_LEN), 0)
-
-    print("Turning into embeddings")
-    for i in range(len(train_text)):
-        wordCount = 0
-        words = train_text[i].split()
-        for word in words:
-            if wordCount == MAX_SEQ_LEN:
-                break
-
-            if word in embeddings_index:
-                data[i][wordCount] = embeddings_index[word]
-            else:
-                data[i][wordCount] = embeddings_index["unk"]
-            wordCount += 1
-
-    validation_set_size = int(VALIDATION_SPLIT * data.shape[0])
-    x_train = data[:-validation_set_size]
-    y_train = train_labels[:-validation_set_size]
-    x_val = data[-validation_set_size:]
-    y_val = train_labels[-validation_set_size:]
-
-    print("Making the model")
-    nn_model = rnn_model.recurrentModel(MAX_SEQ_LEN)
-    nn_model.build_model_basic_RNN2(MAX_SEQ_LEN, data, MAX_SEQ_LEN, EMBEDDING_DIMENSIONS)
-    nn_model.train(x_train, y_train, x_val, y_val)
-
-
 def main():
     # Read in Embeddings
     embeddings_index, word_index_dict = read_embeddings()
@@ -153,7 +118,7 @@ def main():
 
     print("Making the model")
     nn_model = rnn_model.recurrentModel()
-    nn_model.build_model_basic_RNN2(num_words, embedding_matrix, MAX_SEQ_LEN, EMBEDDING_DIMENSIONS, x_train)
+    nn_model.build_model_basic_RNN2(num_words, embedding_matrix, MAX_SEQ_LEN, EMBEDDING_DIMENSIONS)
     nn_model.train(x_train, y_train, x_val, y_val)
 
 if __name__ == "__main__":

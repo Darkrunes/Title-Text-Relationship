@@ -6,8 +6,8 @@ from keras.layers import Dense, Input, Conv1D, MaxPooling1D, LSTM
 import numpy
 import os
 
-RECURRENT_UNITS = 30
-DROPOUT_RATE = 0.2
+RECURRENT_UNITS = 128
+DROPOUT_RATE = 0.3
 EPOCHS = 50
 
 
@@ -60,7 +60,7 @@ class recurrentModel():
         self.model.fit(x_train, y_train, batch_size=50, epochs=EPOCHS, validation_data=(x_val, y_val),
                        callbacks=[tbCallBack, checkpointCallBack])
 
-    def build_model_basic_RNN2(self, num_words, embedding_matrix, max_seq_len, embedding_dimensions, x_train):
+    def build_model_basic_RNN2(self, num_words, embedding_matrix, max_seq_len, embedding_dimensions):
 
         self.modelInput = Input(shape=(max_seq_len, ), dtype="int32")
         embedding_layer = (keras.layers.Embedding(num_words, embedding_dimensions,
@@ -69,9 +69,9 @@ class recurrentModel():
                                                   trainable=False,
                                                   ))(self.modelInput)
 
-        x = LSTM(256, return_sequences=True)(embedding_layer)
-        x = LSTM(256, return_sequences=True, dropout=DROPOUT_RATE)(x)
-        x = LSTM(256, dropout=DROPOUT_RATE)(x)
+        x = LSTM(RECURRENT_UNITS, return_sequences=True)(embedding_layer)
+        x = LSTM(RECURRENT_UNITS, return_sequences=True, dropout=DROPOUT_RATE)(x)
+        x = LSTM(RECURRENT_UNITS, dropout=DROPOUT_RATE)(x)
 
         x = Dense(512, activation="relu")(x)
         x = keras.layers.Dropout(DROPOUT_RATE)(x)
@@ -82,11 +82,10 @@ class recurrentModel():
         self.preds = Dense(5, activation="softmax")(x)
         self.model = keras.Model(self.modelInput, self.preds)
 
-
         self.model.compile(optimizer="rmsprop", loss="categorical_crossentropy",
                            metrics=["accuracy"])
 
-    def build_model_basic_RNN3(self, num_words, embedding_matrix, max_seq_len, embedding_dimensions, x_train):
+    def build_model_basic_RNN3(self, num_words, embedding_matrix, max_seq_len, embedding_dimensions):
 
 
         self.model = keras.Sequential()

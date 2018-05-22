@@ -109,3 +109,4 @@ test_data/
 training_data/
 glove.6B.*
 logs/
+Checkpoints/
