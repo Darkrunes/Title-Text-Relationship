@@ -50,12 +50,13 @@ class recurrentModel():
         self.model.compile(optimizer="rmsprop", loss="categorical_crossentropy",
                            metrics=["accuracy"])
 
-    def predict(self):
+    def predict(self, text):
         pass
 
     def train(self, x_train, y_train, x_val, y_val):
         tbCallBack = keras.callbacks.TensorBoard(log_dir="./logs", write_graph=True, write_images=True)
-        checkpointCallBack = keras.callbacks.ModelCheckpoint("Checkpoints/weights.{epoch:02d}.hdf5", period=5)
+        checkpointCallBack = keras.callbacks.ModelCheckpoint("./Checkpoints/model_and_weights.{epoch:02d}.hdf5",
+                                                             period=5)
 
         self.model.fit(x_train, y_train, batch_size=50, epochs=EPOCHS, validation_data=(x_val, y_val),
                        callbacks=[tbCallBack, checkpointCallBack])
