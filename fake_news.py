@@ -118,7 +118,7 @@ def main():
 
     print("Making the model")
     nn_model = rnn_model.recurrentModel()
-    nn_model.build_model_basic_RNN2(num_words, embedding_matrix, MAX_SEQ_LEN, EMBEDDING_DIMENSIONS)
+    nn_model.combined_model(num_words, embedding_matrix, MAX_SEQ_LEN, EMBEDDING_DIMENSIONS)
     nn_model.train(x_train, y_train, x_val, y_val)
 
 if __name__ == "__main__":
