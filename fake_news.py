@@ -9,11 +9,11 @@ import re
 import rnn_model
 
 MAX_SEQ_LEN = 200
-EMBEDDING_DIMENSIONS = 50
+EMBEDDING_DIMENSIONS = 200
 VALIDATION_SPLIT = 0.2
 
 TRAINING_DIR = "training_data/"
-EMBEDDING_NAME = "glove.6B.50d.txt"
+EMBEDDING_NAME = "glove.6B.200d.txt"
 
 
 def read_embeddings():
@@ -108,8 +108,6 @@ def main():
     num_words = len(word_index) + 1
     embedding_matrix = np.zeros((num_words, EMBEDDING_DIMENSIONS))
     for word, i in word_index.items():
-        #if i >= :
-        #    continue
         embedding_vector = embeddings_index.get(word)
         if embedding_vector is None:
             embedding_matrix[i] = embeddings_index.get("unk")
@@ -118,7 +116,7 @@ def main():
 
     print("Making the model")
     nn_model = rnn_model.recurrentModel()
-    nn_model.combined_model(num_words, embedding_matrix, MAX_SEQ_LEN, EMBEDDING_DIMENSIONS)
+    nn_model.build_model_basic_RNN2(num_words, embedding_matrix, MAX_SEQ_LEN, EMBEDDING_DIMENSIONS)
     nn_model.train(x_train, y_train, x_val, y_val)
 
 if __name__ == "__main__":

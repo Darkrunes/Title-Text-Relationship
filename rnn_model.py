@@ -6,9 +6,9 @@ from keras.layers import Dense, Input, Conv1D, MaxPooling1D, LSTM, Dropout
 import numpy
 import os
 
-RECURRENT_UNITS = 128
-DROPOUT_RATE = 0.4
-EPOCHS = 50
+RECURRENT_UNITS = 256
+DROPOUT_RATE = 0.45
+EPOCHS = 100
 
 
 class recurrentModel():
@@ -22,10 +22,10 @@ class recurrentModel():
                                                  weights=[embedding_matrix],
                                                  input_length=max_seq_len,
                                                  trainable=False)(self.modelInput)
-        y = Conv1D(128, 5, activation='relu')(embedding_layer)
-        y = MaxPooling1D(4)(y)
-        y = Conv1D(64, 5, activation='relu')(y)
-        y = Conv1D(128, 5, activation='relu')(y)
+        y = Conv1D(64, 4, activation="relu")(embedding_layer)
+        y = Conv1D(128, 4, activation='relu')(y)
+        y = Conv1D(64, 4, activation='relu')(y)
+        y = Conv1D(128, 4, activation='relu')(y)
         y = MaxPooling1D(4)(y)
 
         x = LSTM(RECURRENT_UNITS, return_sequences=True, dropout=DROPOUT_RATE)(y)
